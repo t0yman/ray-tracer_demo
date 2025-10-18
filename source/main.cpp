@@ -18,9 +18,14 @@ int main()
     {
         for (int x = 0; x < imageWidth; ++x)
         {
-            const int r = 255;
-            const int g = 0;
-            const int b = 0;
+            // calculate normalized coordinates [0.0, 1.0]
+            const double u = static_cast<double>(x) / (imageWidth - 1);
+            const double v = static_cast<double>(y) / (imageHeight - 1);
+
+            // blend from white (top) to blue (bottom)
+            const int r = static_cast<int>(255.999 * (1.0 - v + v * 0.5));  // white to light blue
+            const int g = static_cast<int>(255.999 * (1.0 - v + v * 0.7));
+            const int b = static_cast<int>(255.999 * 1.0);
 
             imageFile << r << " " << g << " " << b << "\n";
         }

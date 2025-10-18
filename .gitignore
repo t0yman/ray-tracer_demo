@@ -1,0 +1,23 @@
+# Build
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+cmake_install.cmake
+*.ninja
+*.vcxproj*
+*.sln
+*.obj
+*.pdb
+*.ilk
+*.exe
+*.dll
+*.lib
+*.out
+*.o
+*.log
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

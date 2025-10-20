@@ -5,6 +5,8 @@
 #include "color.hpp"
 #include "ray.hpp"
 
+bool RayIntersectsSphere(const Point3& sphereCenter, double sphereRadius, const Ray& ray);
+
 Color GetRayColor(const Ray& ray);
 
 int main()
@@ -64,8 +66,26 @@ int main()
 
 Color GetRayColor(const Ray& ray)
 {
+    if (RayIntersectsSphere(Point3{0.0, 0.0, -1.0}, 0.5, ray))
+    {
+        return Color{1.0, 0.0, 0.0};  // red sphere
+    }
+
     const Vector3 direction = Normalize(ray.direction);
     const double t = 0.5 * (direction.y + 1.0);
 
     return Color{1.0, 1.0, 1.0} * (1.0 - t) + Color{0.5, 0.7, 1.0} * t;
+}
+
+bool RayIntersectsSphere(const Point3& sphereCenter, double sphereRadius, const Ray& ray)
+{
+    const Vector3 oc = ray.origin - sphereCenter;
+    
+    const double a = DotProduct(ray.direction, ray.direction);
+    const double b = 2.0 * DotProduct(oc, ray.direction);
+    const double c = DotProduct(oc, oc) - sphereRadius * sphereRadius;
+    
+    const double discriminant = b * b - 4 * a * c;
+
+    return (discriminant > 0);
 }

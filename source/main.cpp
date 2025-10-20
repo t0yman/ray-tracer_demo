@@ -5,7 +5,7 @@
 #include "color.hpp"
 #include "ray.hpp"
 
-bool RayIntersectsSphere(const Point3& sphereCenter, double sphereRadius, const Ray& ray);
+double RayIntersectsSphere(const Point3& sphereCenter, double sphereRadius, const Ray& ray);
 
 Color GetRayColor(const Ray& ray);
 
@@ -66,18 +66,22 @@ int main()
 
 Color GetRayColor(const Ray& ray)
 {
-    if (RayIntersectsSphere(Point3{0.0, 0.0, -1.0}, 0.5, ray))
+    const double t = RayIntersectsSphere(Point3{0.0, 0.0, -1.0}, 0.5, ray);
+    if (t > 0.0)
     {
-        return Color{1.0, 0.0, 0.0};  // red sphere
+        Point3 hitPoint = ray.At(t);
+        Vector3 normal = Normalize(hitPoint - Point3{0.0, 0.0, -1.0});
+
+        return Color{normal.x + 1.0, normal.y + 1.0, normal.z + 1.0} * 0.5;
     }
 
     const Vector3 direction = Normalize(ray.direction);
-    const double t = 0.5 * (direction.y + 1.0);
+    const double a = 0.5 * (direction.y + 1.0);
 
-    return Color{1.0, 1.0, 1.0} * (1.0 - t) + Color{0.5, 0.7, 1.0} * t;
+    return Color{1.0, 1.0, 1.0} * (1.0 - a) + Color{0.5, 0.7, 1.0} * a;
 }
 
-bool RayIntersectsSphere(const Point3& sphereCenter, double sphereRadius, const Ray& ray)
+double RayIntersectsSphere(const Point3& sphereCenter, double sphereRadius, const Ray& ray)
 {
     const Vector3 oc = ray.origin - sphereCenter;
     
@@ -87,5 +91,10 @@ bool RayIntersectsSphere(const Point3& sphereCenter, double sphereRadius, const 
     
     const double discriminant = b * b - 4 * a * c;
 
-    return (discriminant > 0);
+    if (discriminant < 0.0)
+    {
+        return -1.0;  // no hit;
+    }
+
+    return (-b - std::sqrt(discriminant)) / (2.0 * a);  // otherwise, return hit distance
 }

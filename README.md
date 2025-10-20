@@ -1,7 +1,7 @@
 
 # C++ Ray Tracer
 
-A minimal ray-tracer implementation in C++ that renders a 3D sphers with surface normal shading.
+A minimal ray-tracer implementation in C++ that renders a 3D sphere with surface normal shading.
 
 ![Ray Traced Sphere](ray-tracer_demo_output.jpg)
 

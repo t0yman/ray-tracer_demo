@@ -5,7 +5,7 @@ An implementation of a ray-tracer in C++, demonstrating fundamental computer gra
 
 ## Features
 
-- Ray-sphere intersection with surface normal shading.
+- Ray-sphere intersection of multiple objects with surface normal shading.
 - Virtual camera system with configurable viewport.
 - 3D vector mathematics (dot product, cross product, normalization)
 - PPM image output
@@ -13,11 +13,12 @@ An implementation of a ray-tracer in C++, demonstrating fundamental computer gra
 ## Technical Highlights
 
 - Demonstrates understanding of graphics pipeline fundamentals.
+- Implements scene composition with multiple geometric primitives.
 - Clean, readable C++ code following modern practices.
 
 ## Sample Output
 
-![Ray Traced Sphere](ray-tracer_demo_output.jpg)
+![Ray Traced Spheres](ray-tracer_demo_output.jpg)
 
 # Build
 

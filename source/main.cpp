@@ -1,13 +1,14 @@
 #include <iostream>
+#include <limits>
 #include <fstream>
 #include <stdexcept>
+#include <vector>
 
 #include "color.hpp"
 #include "ray.hpp"
+#include "sphere.hpp"
 
-double RayIntersectsSphere(const Point3& sphereCenter, double sphereRadius, const Ray& ray);
-
-Color GetRayColor(const Ray& ray);
+Color CastRay(const std::vector<Sphere>& scene, const Ray& ray);
 
 int main()
 {
@@ -26,6 +27,13 @@ int main()
     const Vector3 horizontalDir = Vector3{viewportWidth, 0.0, 0.0};  // represents the horizontal direction in which the viewport spans
     const Vector3 verticalDir = Vector3{0.0, viewportHeight, 0.0};  // represents the vertical direction in which the viewport spans
     const Point3 lowerLeftCorner = cameraOrigin - (horizontalDir / 2.0) - (verticalDir / 2.0) - Vector3{0.0, 0.0, focalLength};
+
+    // scene config
+    const std::vector<Sphere> scene{
+        Sphere{Point3{0.0, 0.0, -3.0}, 1.0},
+        Sphere{Point3{-1.5, 0.0, -2.0}, 0.5},
+        Sphere{Point3{1.0, 0.5, -2.5}, 0.7}
+    };
 
     // rendering 
     std::ofstream imageFile{"output.ppm"};
@@ -49,7 +57,7 @@ int main()
             // (destination point) - (starting point) gives the direction from the camera to the point
             Ray ray{cameraOrigin, lowerLeftCorner + horizontalDir * u + verticalDir * v - cameraOrigin};
             
-            Color pixelColor = GetRayColor(ray);
+            Color pixelColor = CastRay(scene, ray);
 
             const int r = static_cast<int>(255.999 * pixelColor.x);
             const int g = static_cast<int>(255.999 * pixelColor.y);
@@ -64,12 +72,28 @@ int main()
     return 0;
 }
 
-Color GetRayColor(const Ray& ray)
+Color CastRay(const std::vector<Sphere>& scene, const Ray& ray)
 {
-    const double t = RayIntersectsSphere(Point3{0.0, 0.0, -1.0}, 0.5, ray);
-    if (t > 0.0)
+    double tMin = std::numeric_limits<double>::infinity();
+    for (const Sphere& sphere : scene)
     {
-        Point3 hitPoint = ray.At(t);
+        const Vector3 oc = ray.origin - sphere.center;
+
+        const double a = DotProduct(ray.direction, ray.direction);
+        const double b = 2.0 * DotProduct(oc, ray.direction);
+        const double c = DotProduct(oc, oc) - sphere.radius * sphere.radius;
+
+        const double discriminant = b * b - 4 * a * c;
+        double hitDistance;
+        if (discriminant >= 0.0 && (hitDistance = (-b - std::sqrt(discriminant)) / (2.0 * a)) <= tMin)
+        {
+            tMin = hitDistance;
+        }
+    }
+    
+    if (std::isinf(tMin) == false)  // if ray hit something then calculate and return color of sphere
+    {
+        Point3 hitPoint = ray.At(tMin);
         Vector3 normal = Normalize(hitPoint - Point3{0.0, 0.0, -1.0});
 
         return Color{normal.x + 1.0, normal.y + 1.0, normal.z + 1.0} * 0.5;
@@ -79,22 +103,4 @@ Color GetRayColor(const Ray& ray)
     const double a = 0.5 * (direction.y + 1.0);
 
     return Color{1.0, 1.0, 1.0} * (1.0 - a) + Color{0.5, 0.7, 1.0} * a;
-}
-
-double RayIntersectsSphere(const Point3& sphereCenter, double sphereRadius, const Ray& ray)
-{
-    const Vector3 oc = ray.origin - sphereCenter;
-    
-    const double a = DotProduct(ray.direction, ray.direction);
-    const double b = 2.0 * DotProduct(oc, ray.direction);
-    const double c = DotProduct(oc, oc) - sphereRadius * sphereRadius;
-    
-    const double discriminant = b * b - 4 * a * c;
-
-    if (discriminant < 0.0)
-    {
-        return -1.0;  // no hit;
-    }
-
-    return (-b - std::sqrt(discriminant)) / (2.0 * a);  // otherwise, return hit distance
 }

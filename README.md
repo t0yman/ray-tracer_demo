@@ -1,7 +1,7 @@
 
 # C++ Ray Tracer
 
-An implementation fo a ray-tracer in C++, demonstrating fundamental computer graphics concepts.
+An implementation of a ray-tracer in C++, demonstrating fundamental computer graphics concepts.
 
 ## Features
 
@@ -25,7 +25,7 @@ An implementation fo a ray-tracer in C++, demonstrating fundamental computer gra
 g++ -std=c++11 source/main.cpp -o ray-tracer_demo
 ```
 
-## Furture Improvements
+## Future Improvements
 
 - Multiple objects and materials.
 - Lighting models (diffuse, specular)

@@ -74,6 +74,7 @@ int main()
 
 Color CastRay(const std::vector<Sphere>& scene, const Ray& ray)
 {
+    Sphere hitSphere;
     double tMin = std::numeric_limits<double>::infinity();
     for (const Sphere& sphere : scene)
     {
@@ -88,13 +89,14 @@ Color CastRay(const std::vector<Sphere>& scene, const Ray& ray)
         if (discriminant >= 0.0 && (hitDistance = (-b - std::sqrt(discriminant)) / (2.0 * a)) <= tMin)
         {
             tMin = hitDistance;
+            hitSphere = sphere;
         }
     }
     
     if (std::isinf(tMin) == false)  // if ray hit something then calculate and return color of sphere
     {
         Point3 hitPoint = ray.At(tMin);
-        Vector3 normal = Normalize(hitPoint - Point3{0.0, 0.0, -1.0});
+        Vector3 normal = Normalize(hitPoint - hitSphere.center);
 
         return Color{normal.x + 1.0, normal.y + 1.0, normal.z + 1.0} * 0.5;
     }
